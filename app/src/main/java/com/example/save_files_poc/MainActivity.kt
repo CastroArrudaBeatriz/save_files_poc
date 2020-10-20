@@ -1,5 +1,6 @@
 package com.example.save_files_poc
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -16,13 +17,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
+    @SuppressLint("LongLogTag")
     @ExperimentalStdlibApi
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onStart() {
         super.onStart()
 
         /**
-         *  Criar arquivo nome dir externo
+         *  Criar arquivo nome dir interno
          * */
         val fileName = "file_name.txt"
         val fileBody = "Beatriz"
@@ -31,14 +33,16 @@ class MainActivity : AppCompatActivity() {
             output.flush()
             output.close()
         }
-        //this.deleteFile("file_idade.txt")
 
         /**
          *  ler arquivo nome dir interno
          * */
         this.openFileInput(fileName).use { fileInputStream ->
-            Log.d("File Name Conteúdo:", fileInputStream.readBytes().decodeToString());
+            println("File Name Conteúdo: ${fileInputStream.readBytes().decodeToString()}");
         }
+        println("Path FileName: ${getFileStreamPath(fileName).canonicalPath}")
+        //this.deleteFile(fileName)
+
 
         /**
          *  Criar arquivo nome dir externo
@@ -56,8 +60,10 @@ class MainActivity : AppCompatActivity() {
          *  ler arquivo nome dir externo
          * */
         FileInputStream(myFile).use { fileInputStream ->
-            Log.d("File Idade Conteúdo:", fileInputStream.bufferedReader().readLine());
+            println("File Idade Conteúdo: ${fileInputStream.bufferedReader().readLine()}");
         }
+        println("Path FileIdade: ${myFile.canonicalPath}")
+        //myFile.delete()
 
 
     }
