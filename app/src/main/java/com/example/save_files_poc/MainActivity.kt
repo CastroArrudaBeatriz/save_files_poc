@@ -5,17 +5,24 @@ import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.security.crypto.EncryptedFile
+import androidx.security.crypto.MasterKey
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
+
+    private val fileName1 = "encript_file.txt"
+    private lateinit var jetpackFile: File
+    private lateinit var encryptedFile: EncryptedFile
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
+
 
     @SuppressLint("LongLogTag")
     @ExperimentalStdlibApi
@@ -66,5 +73,30 @@ class MainActivity : AppCompatActivity() {
         //myFile.delete()
 
 
+        /**
+         * salvar arquivos utilizando Jetpack
+         * */
+        initEncryptedVariables()
+        jetpackFile.delete()
+        encryptedFile.openFileOutput().use {
+            it.write("Eu sou encript YAYAYAY".toByteArray())
+        }
+
+        encryptedFile.openFileInput().use {
+            println(it.readBytes().decodeToString())
+        }
+
+
+
+    }
+
+    private fun initEncryptedVariables(){
+        jetpackFile = File(filesDir, fileName1)
+        encryptedFile = EncryptedFile.Builder(
+            this,
+            jetpackFile,
+            MasterKey.Builder(this).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
+            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+        ).build()
     }
 }
